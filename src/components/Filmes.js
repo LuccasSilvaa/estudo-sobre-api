@@ -1,47 +1,44 @@
 import React from "react";
-import axios from "axios";
-// API_KEY:d93c97a85b930dd93e8a05ab4d92dbb3
-// https://api.themoviedb.org/3/movie/popular?api_key=d93c97a85b930dd93e8a05ab4d92dbb3&language=en-US&page=1'
+import axios from 'axios';
 
- const Mymovie_Api = axios.create({
-  baseURL:"https://api.themoviedb.org/3/movie/popular?api_key=d93c97a85b930dd93e8a05ab4d92dbb3&language=en-US&page=1"
- })
+const MyMovie_API = axios.create({
+  baseURL:'https://api.themoviedb.org/3/movie/popular?api_key=d93c97a85b930dd93e8a05ab4d92dbb3&language=en-US&page=1'
+})
 
-export default class App extends React.Component{
+export default class Filmes extends React.Component{
+    
+    state={
+      movie:[]
+    }
+  
+    componentDidMount(){
+      this.getMovie()
+    }
+    getMovie = async () =>{
+      const response = await MyMovie_API.get()
 
-  state={
-    movies:[
+      const InfoMovie = response.data.results.map(item => {
+        return{
+          nome: item.title,
+          sinopse: item.overview,
+          imagem:item.poster_path
+        }
+      })
 
-    ]
-  }
-  componentDidMount(){
-    this.handleMovies()
-  }
-  handleMovies = async () =>{
-    const pegarApi = await Mymovie_Api.get()
+      this.setState({movie:InfoMovie})
 
-    const InfosFIlmes = pegarApi.data.results.map(item => {
-      return{
-        nome:item.title,
-        sinopse: item.overview
-      }
-    })
+      console.log(response)
+    }
 
-    this.setState({movies: InfosFIlmes})
-
-    console.log(pegarApi)
-  }
   render(){
     return(
+      <ul>{this.state.movie.map(item => (
       <>
-      <h1>Aqui vai os filmes</h1>
-      <ul>{this.state.movies.map(infos => (
-        <li>
-          {infos.nome}
-          <p>{infos.sinopse}</p>
-        </li>
-      ))}</ul>
+       <img src={item.imagem}/>
+        <li>{item.nome}</li>
+        <p>{item.sinopse}</p>
       </>
+      ))}</ul>
     )
   }
 }
